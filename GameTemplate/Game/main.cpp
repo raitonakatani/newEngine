@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "system/system.h"
 #include "ModelStandard.h"
-
+#include "Game.h"
 
 // 関数宣言
 void InitRootSignature(RootSignature& rs);
@@ -100,6 +100,30 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
         //レンダリングエンジンを実行
         renderingEngine.Execute(renderContext);
+
+
+        Vector3 POS;
+
+        //三角形の座標が入っているリストを持ってくる。
+        std::vector<nsK2EngineLow::TkmFile::VectorBuffer> bufferList = bgModelRender.GetTkm()->GetBuffer();
+
+   
+                Vector3 startVector;
+                Vector3 endVector;
+                
+                startVector = {0.0f,0.0f,0.0f};
+                endVector = { 1000.0f,0.0f,1000.0f };
+
+                //平面と線分の交点を求める。　POS（交点の座標）、vector3d(線分始点)、vector3dend(線分終点)、ポリゴンの3頂点
+                bgModelRender.IntersectPlaneAndLine(POS, startVector, endVector, bufferList);
+                auto Vector = POS;
+                auto Vector2 = POS;
+
+
+
+
+
+
 
 
         // ゲームオブジェクトマネージャーの更新処理を呼び出す。

@@ -12,6 +12,7 @@
       <Filter>system</Filter>
     </ClCompile>
     <ClCompile Include="ModelStandard.cpp" />
+    <ClCompile Include="Game.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -19,5 +20,6 @@
       <Filter>system</Filter>
     </ClInclude>
     <ClInclude Include="ModelStandard.h" />
+    <ClInclude Include="Game.h" />
   </ItemGroup>
 </Project>

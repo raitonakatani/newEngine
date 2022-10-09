@@ -24,18 +24,18 @@ namespace nsK2EngineLow {
 		/// <summary>
 		/// マテリアル
 		/// </summary>
-		struct  SMaterial{
+		struct  SMaterial {
 			int uniqID;								// テクスチャファイル名から作成されるユニークID。
 			std::string albedoMapFileName;			// アルベドマップのファイル名。
 			std::string normalMapFileName;			// 法線マップのファイル名。
 			std::string specularMapFileName;		// スペキュラマップのファイル名。
 			std::string reflectionMapFileName;		// リフレクションマップのファイル名。
 			std::string refractionMapFileName;		// 屈折マップのファイル名。
-			LowTexture*	albedoMap;					// ロードされたアルベドマップの生テクスチャデータ。(ddsファイル)
-			LowTexture*	normalMap;					// ロードされた法線マップの生テクスチャデータ。(ddsファイル9
+			LowTexture* albedoMap;					// ロードされたアルベドマップの生テクスチャデータ。(ddsファイル)
+			LowTexture* normalMap;					// ロードされた法線マップの生テクスチャデータ。(ddsファイル9
 			LowTexture* specularMap;				// ロードされたスペキュラマップの生テクスチャデータ。(ddsファイル)
-			LowTexture*	reflectionMap;				// ロードされたリフレクションマップの生テクスチャデータ。(ddsファイル)
-			LowTexture*	refractionMap;				// ロードされた屈折マップの生テクスチャデータ。(ddsファイル)
+			LowTexture* reflectionMap;				// ロードされたリフレクションマップの生テクスチャデータ。(ddsファイル)
+			LowTexture* refractionMap;				// ロードされた屈折マップの生テクスチャデータ。(ddsファイル)
 		};
 		/// <summary>
 		/// 頂点。
@@ -74,6 +74,31 @@ namespace nsK2EngineLow {
 			std::vector<SIndexBuffer32> indexBuffer32Array;		// インデックスバッファの配列。マテリアルの数分だけインデックスバッファはあるよ。
 			std::vector< SIndexbuffer16> indexBuffer16Array;
 		};
+
+
+		///<summary>
+		///三角形の頂点座標
+		///</summary>
+		struct VectorBuffer {
+			Vector3 buffer[3];		//三角形の座標。
+		};
+
+
+		std::vector<VectorBuffer>& GetBuffer()
+		{
+			return m_buffer;
+		}
+
+		std::vector<VectorBuffer> m_buffer;		// 頂点バッファ。
+
+
+		const std::vector< SMesh>& GetVertexBuffer() const
+		{
+			return m_meshParts;
+		}
+		template <class IndexBuffer>
+		void Buffer(TkmFile::SMesh& mesh, const IndexBuffer& indexBuffer, BSP& bsp);
+		//NormalSmoothing normalSmoothing;
 
 		/// <summary>
 		/// 3Dモデルをロード。
@@ -119,6 +144,8 @@ namespace nsK2EngineLow {
 		{
 			return (int)(m_meshParts.size());
 		}
+
+
 	private:
 		/// <summary>
 		/// テクスチャ名をロード。
@@ -151,5 +178,8 @@ namespace nsK2EngineLow {
 	private:
 		BSP m_bpsOnVertexPosition;				// 頂点座標を使ったBSPツリー。
 		std::vector< SMesh >	m_meshParts;		// メッシュパーツ。
+
+
+	//	std::vector< Buffer >	m_Buffer;		// バッファ。
 	};
 }

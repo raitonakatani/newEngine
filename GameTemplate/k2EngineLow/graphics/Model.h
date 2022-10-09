@@ -177,6 +177,11 @@ namespace nsK2EngineLow {
 		void ReInitMaterials(MaterialReInitData& reInitData);
 
 
+		TkmFile* GetTkmFile()
+		{
+			return m_tkmFile;
+		}
+
 		/// <summary>
 /// シャドウレシーバーのフラグを設定
 /// </summary>

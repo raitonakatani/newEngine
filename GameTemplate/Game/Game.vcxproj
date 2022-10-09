@@ -223,6 +223,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ModelStandard.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -233,6 +234,7 @@
     <ClCompile Include="system\system.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Game.h" />
     <ClInclude Include="ModelStandard.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="system\system.h" />
