@@ -96,17 +96,19 @@ namespace nsK2EngineLow {
 			auto& vert_2 = mesh.vertexBuffer[vertNo_2];
 
 
-			//		auto& buffer = m_buffer[polyNo];
-
-				//m_buffer.push_back();
-
 			VectorBuffer vectorbuffer;
-
-			//m_buffer.reserve(10);
 
 			vectorbuffer.buffer[0] = vert_0.pos;
 			vectorbuffer.buffer[1] = vert_1.pos;
 			vectorbuffer.buffer[2] = vert_2.pos;
+
+
+			//ñ@ê¸ÇåvéZÇ∑ÇÈÅB
+			Vector3 v0tov1 = vert_1.pos - vert_0.pos;
+			Vector3 v0tov2 = vert_2.pos - vert_0.pos;
+			vectorbuffer.normal = Cross(v0tov1, v0tov2);
+			vectorbuffer.normal.Normalize();
+
 
 			m_buffer.push_back(vectorbuffer);
 		}

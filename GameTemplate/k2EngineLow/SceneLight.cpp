@@ -4,13 +4,8 @@
 namespace nsK2EngineLow {
 	SceneLight g_Light;
 
-
 	void SceneLight::Init()
 	{
-		// ライトのデータを作成する
-	//	int frameBuffer_w = g_graphicsEngine->GetFrameBufferWidth();
-	//	int frameBuffer_h = g_graphicsEngine->GetFrameBufferHeight();
-
 
 		//ディレクションライト
 		// ライトのカラー
@@ -24,12 +19,6 @@ namespace nsK2EngineLow {
 		m_light.directionlight.dirDirection.z = -1.0f;
 		m_light.directionlight.dirDirection.Normalize();
 		m_light.directionlight.castShadow = true;
-
-
-
-		// 視点の位置を設定する
-		//m_light.eyePos =g_camera3D->GetPosition(); 
-
 
 		//ポイントライト
 		// ポイントライトの座標を設定する
@@ -69,13 +58,12 @@ namespace nsK2EngineLow {
 		m_light.ambientLight.y = 0.2f;
 		m_light.ambientLight.z = 0.2f;
 
-
+		//視点の位置を設定する
 		m_light.eyePos = g_camera3D->GetPosition();
 
 		m_light.specPow = 5.0f;
 
 	}
-
 
 	SceneLight::~SceneLight()
 	{
@@ -112,47 +100,4 @@ namespace nsK2EngineLow {
 				qRotX.Apply(m_light.spotlight.spDirection);
 				*/
 	}
-
-	/*
-		void LightALL::InitDirectionLight(Directionlight& m_light)
-		{
-			// ライトは右側から当たっている
-			m_light.dirDirection.x = 0.0f;
-			m_light.dirDirection.y = -0.3f;
-			m_light.dirDirection.z = 1.0f;
-			m_light.dirDirection.Normalize();
-
-			// ライトのカラーは(*･ω･)/ﾊｰｲ
-			m_light.dirColor.x = 0.5f;
-			m_light.dirColor.y = 0.5f;
-			m_light.dirColor.z = 0.5f;
-
-
-		}
-
-		void LightALL::InitPointLight(Pointlight& m_light)
-		{
-			// ポイントライトの座標を設定する
-			m_light.ptPosition.x = 0.0f;
-			m_light.ptPosition.y = 50.0f;
-			m_light.ptPosition.z = 0.0f;
-
-			// ポイントライトのカラーを設定する
-			m_light.ptColor.x = 0.5f;
-			m_light.ptColor.y = 0.5f;
-			m_light.ptColor.z = 0.5f;
-
-			// ポイントライトの影響範囲を設定する
-			m_light.ptRange = 100.0f;
-		}
-
-		void LightALL::InitAmbientLight(Ambientlight& m_light)
-		{
-			// アンビエントライト
-			m_light.ambientLight.x = 0.3f;
-			m_light.ambientLight.y = 0.3f;
-			m_light.ambientLight.z = 0.3f;
-		}
-		*/
-
 }

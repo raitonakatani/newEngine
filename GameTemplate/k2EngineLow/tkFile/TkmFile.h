@@ -81,6 +81,8 @@ namespace nsK2EngineLow {
 		///</summary>
 		struct VectorBuffer {
 			Vector3 buffer[3];		//三角形の座標。
+			Vector3 normal;			//法線。
+
 		};
 
 

@@ -51,17 +51,12 @@ namespace nsK2EngineLow {
     public:
         SceneLight() {}
         ~SceneLight();
-        void Update();
-        //       void InitDirectionLight(Directionlight& m_light);
-        //       void InitPointLight(Pointlight& m_light);
-        //       void InitAmbientLight(Ambientlight& m_light);
+  
         void Init();
-
-
-
+        void Update();
 
         /// <summary>
-        /// ディレクションライトの方向。
+        /// ディレクションライトの方向を設定する。
         /// </summary>
         /// <param name="light">方向</param>
         void SetLigDirection(const Vector3& light)
@@ -69,7 +64,7 @@ namespace nsK2EngineLow {
             m_light.directionlight.dirDirection = light;
         }
         /// <summary>
-        /// ディレクションライトのカラー。
+        /// ディレクションライトのカラーを設定する。
         /// </summary>
         /// <param name="light">カラー</param>
         void SetLigColor(const Vector3& color)
@@ -88,7 +83,7 @@ namespace nsK2EngineLow {
 
 
         /// <summary>
-         /// ポイントライトの場所。
+         /// ポイントライトの場所を設定する。
          /// </summary>
          /// <param name="light">場所</param>
         void SetLigPoint(const Vector3& lightposi)
@@ -96,7 +91,7 @@ namespace nsK2EngineLow {
             m_light.pointlight.ptPosition = lightposi;
         }
         /// <summary>
-         /// ポイントライトのカラー。
+         /// ポイントライトのカラーを設定する。
          /// </summary>
          /// <param name="light">カラー</param>
         void SetLigPointColor(const Vector3& lightcola)
@@ -104,7 +99,7 @@ namespace nsK2EngineLow {
             m_light.pointlight.ptColor = lightcola;
         }
         /// <summary>
-        /// 範囲を設定。
+        /// ポイントライトの影響範囲を設定。
         /// </summary>
         /// <param name="range"></param>
         void SetPointRange(float range)
@@ -114,7 +109,7 @@ namespace nsK2EngineLow {
 
 
         /// <summary>
-         /// スポットライトの回転。
+         /// スポットライトの回転を設定する。
          /// </summary>
          /// <param name="rot">回転</param>
         void SetLigSpotRot(const Vector3& lightrot)
@@ -122,7 +117,7 @@ namespace nsK2EngineLow {
             m_light.spotlight.spDirection = lightrot;
         }
         /// <summary>
-        /// スポットライトの場所。
+        /// スポットライトの場所を設定する。
         /// </summary>
         /// <param name="posi">場所</param>
         void SetLigSpot(const Vector3& posi)
@@ -130,7 +125,7 @@ namespace nsK2EngineLow {
             m_light.spotlight.spPosition = posi;
         }
         /// <summary>
-        /// スポットライトの色。
+        /// スポットライトの色を設定する。
         /// </summary>
         /// <param name="Color">色</param>
         void SetLigSpotColor(const Vector3& color)
@@ -148,21 +143,28 @@ namespace nsK2EngineLow {
             m_light.eyePos = pos;
         }
 
-
-
-
+        /// <summary>
+        /// ディレクションライトの方向を取得する
+        /// </summary>
+        /// <returns>方向</returns>
         const Vector3& GetDirectionLightDirection()const
         {
             return m_light.directionlight.GetDirection();
         }
 
-
+        /// <summary>
+        /// ライトの情報を取得する
+        /// </summary>
+        /// <returns>ライト</returns>
         Light& GetLight()
         {
             return m_light;
         }
 
-
+        /// <summary>
+        /// 環境光のカラーを取得する
+        /// </summary>
+        /// <returns>カラー</returns>
         const Vector3& GetAmbientLight()
         {
             return m_light.ambientLight;
@@ -170,9 +172,8 @@ namespace nsK2EngineLow {
 
 
     private:
-        Light               m_light;  //シーンライト。
-
-        float posi = 0.0f;
+        Light    m_light;  //シーンライト。
+        //float posi = 0.0f;
     };
     //グローバル変数。 (extern)
     extern SceneLight g_Light;

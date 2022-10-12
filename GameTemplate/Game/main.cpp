@@ -53,6 +53,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     ModelRender bgModelRender;
     bgModelRender.InitDeferredRendering(renderingEngine, "Assets/modelData/bg/bg.tkm", true);
 
+    ModelRender boxModelRender;
+    boxModelRender.InitDeferredRendering(renderingEngine, "Assets/modelData/testModel/box.tkm", true);
+
+    boxModelRender.UpdateWorldMatrix({ 0.0f,200.0f,0.0f }, g_quatIdentity, g_vec3One);
+
     ModelInitDataFR modelInitData;
     modelInitData.m_tkmFilePath = "Assets/modelData/unityChan.tkm";
     modelInitData.m_fxFilePath = "Assets/shader/sample.fx";
@@ -94,6 +99,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
         bgModelRender.Draw();
 
+        boxModelRender.Draw();
+
         // step-2 ティーポットを描画する
         teapotModelRender.Draw();
 
@@ -105,18 +112,20 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
         Vector3 POS;
 
         //三角形の座標が入っているリストを持ってくる。
-        std::vector<nsK2EngineLow::TkmFile::VectorBuffer> bufferList = bgModelRender.GetTkm()->GetBuffer();
+        std::vector<nsK2EngineLow::TkmFile::VectorBuffer> bufferList = boxModelRender.GetTkm()->GetBuffer();
 
    
                 Vector3 startVector;
                 Vector3 endVector;
                 
-                startVector = {0.0f,0.0f,0.0f};
-                endVector = { 1000.0f,0.0f,1000.0f };
+                startVector = {0.0f,200.0f,-500.0f};
+                endVector = { 0.0f,200.0f,500.0f };
 
                 //平面と線分の交点を求める。　POS（交点の座標）、vector3d(線分始点)、vector3dend(線分終点)、ポリゴンの3頂点
-                bgModelRender.IntersectPlaneAndLine(POS, startVector, endVector, bufferList);
+                boxModelRender.IntersectPlaneAndLine(POS, startVector, endVector, bufferList);
+
                 auto Vector = POS;
+
                 auto Vector2 = POS;
 
 
