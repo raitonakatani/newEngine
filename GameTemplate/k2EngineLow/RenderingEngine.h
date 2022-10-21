@@ -66,6 +66,15 @@ namespace nsK2EngineLow
         }
 
         /// <summary>
+        /// オフスクリーンの描画パスにモデルを追加
+        /// </summary>
+        /// <param name="model"></param>
+        void Add3DModelToOffScreen(Model& model)
+        {
+            m_offScreenModels.push_back(&model);
+        }     
+        
+        /// <summary>
         /// ZPrepassの描画パスにモデルを追加
         /// </summary>
         /// <param name="model"></param>
@@ -91,6 +100,17 @@ namespace nsK2EngineLow
         {
             m_forwardRenderModels.push_back(&model);
         }
+
+
+        /// <summary>
+        /// オフスクリーンで作成されたテクスチャを取得
+        /// </summary>
+        /// <returns></returns>
+        Texture& GetOffScreenDepthTexture()
+        {
+            return m_offScreenRenderTarget.GetRenderTargetTexture();
+        }
+
 
         /// <summary>
         /// ZPrepassで作成された深度テクスチャを取得
@@ -137,6 +157,15 @@ namespace nsK2EngineLow
             m_deferredLightingCB.m_light.directionalLight[lightNo].color = color;
         }
 
+        /// <summary>
+   /// オフスクリーンレンダリング
+   /// </summary>
+   /// <param name="rc"></param>
+        void OFFScreenRendering(RenderContext& rc);
+
+
+        RenderTarget m_offScreenRenderTarget;        // ZPrepass描画用のレンダリングターゲット
+
     private:
         /// <summary>
         /// G-Bufferを初期化
@@ -153,6 +182,7 @@ namespace nsK2EngineLow
         /// </summary>
         /// <param name="rc">レンダリングコンテキスト</param>
         void RenderToShadowMap(RenderContext& rc);
+
 
         /// <summary>
         /// ZPrepass
@@ -200,6 +230,13 @@ namespace nsK2EngineLow
         /// </summary>
         void InitCopyMainRenderTargetToFrameBufferSprite();
 
+
+        /// <summary>
+        /// オフスクリーン用のレンダリングターゲットを初期化
+        /// </summary>
+        void InitOffScreenRenderTarget();
+
+
         /// <summary>
         /// ZPrepass用のレンダリングターゲットを初期化
         /// </summary>
@@ -244,6 +281,7 @@ namespace nsK2EngineLow
         RenderTarget m_mainRTSnapshots[(int)EnMainRTSnapshot::enNum];   // メインレンダリングターゲットのスナップショット
         RenderTarget m_gBuffer[enGBufferNum];                           // G-Buffer
         PostEffect m_postEffect;                                        // ポストエフェクト
+        std::vector< Model* > m_offScreenModels;                         // オフスクリーンの描画パスで描画されるモデルのリスト
         std::vector< Model* > m_zprepassModels;                         // ZPrepassの描画パスで描画されるモデルのリスト
         std::vector< Model* > m_renderToGBufferModels;                  // Gバッファへの描画パスで描画するモデルのリスト
         std::vector< Model* > m_forwardRenderModels;                    // フォワードレンダリングの描画パスで描画されるモデルのリスト

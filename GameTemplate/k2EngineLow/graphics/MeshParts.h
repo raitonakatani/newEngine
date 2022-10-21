@@ -178,5 +178,6 @@ namespace nsK2EngineLow {
 		void* m_expandData = nullptr;						//ユーザー拡張データ。
 		bool m_isShadowReciever = true;		//シャドウレシーバーのフラグ
 
+
 	};
 }

@@ -98,9 +98,15 @@ namespace nsK2EngineLow {
 
 			VectorBuffer vectorbuffer;
 
+			//三角形の３頂点の座標
 			vectorbuffer.buffer[0] = vert_0.pos;
 			vectorbuffer.buffer[1] = vert_1.pos;
 			vectorbuffer.buffer[2] = vert_2.pos;
+
+			//三角形の３頂点のUV座標
+			vectorbuffer.uv[0] = vert_0.uv;
+			vectorbuffer.uv[1] = vert_1.uv;
+			vectorbuffer.uv[2] = vert_2.uv;
 
 
 			//法線を計算する。
@@ -491,6 +497,20 @@ namespace nsK2EngineLow {
 			for (unsigned int materialNo = 0; materialNo < meshPartsHeader.numMaterial; materialNo++) {
 				auto& material = meshParts.materials[materialNo];
 				BuildMaterial(material, fp, filePath, isLoadTexture, isOutputErrorCodeTTY);
+				
+				//アルベドマップのファイル名情報を読み込む。
+				m_albedoMap = m_meshParts[meshPartsNo].materials[materialNo].albedoMapFileName;
+				if (m_albedoMap.find("png") == std::string::npos) {
+				}
+				else {
+					m_albedoMap.erase(m_albedoMap.find("png"));
+					m_albedoMap += "DDS";
+					m_albedoMapDDS += "Assets/ModelData/testModel/";
+					m_albedoMapDDS += m_albedoMap;
+					m_albedo = m_albedoMapDDS.c_str();
+				}
+
+
 			}
 
 			//続いて頂点バッファ。

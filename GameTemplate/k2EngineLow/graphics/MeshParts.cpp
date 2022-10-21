@@ -100,6 +100,8 @@ namespace nsK2EngineLow {
 		for (auto& mesh : m_meshs) {
 			for (int matNo = 0; matNo < mesh->m_materials.size(); matNo++) {
 
+				mesh->m_materials[matNo]->GetAlbedoMap();
+
 				//ディスクリプタヒープにディスクリプタを登録していく。
 				m_descriptorHeap.RegistShaderResource(srvNo, mesh->m_materials[matNo]->GetAlbedoMap());		//アルベドマップ。
 				m_descriptorHeap.RegistShaderResource(srvNo + 1, mesh->m_materials[matNo]->GetNormalMap());		//法線マップ。

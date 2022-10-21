@@ -58,6 +58,12 @@ namespace nsK2EngineLow {
 		{
 			return m_renderTargetTexture;
 		}
+
+		//void GetRenderTexture(int texNo)
+		//{
+		//	m_renderTargetTexture.GetTexture(texNo);
+		//}
+
 		/// <summary>
 		/// デプスステンシルバッファが存在しているか判定
 		/// </summary>

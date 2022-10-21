@@ -116,6 +116,13 @@ namespace nsK2EngineLow {
 		{
 			return m_textures[texNo].GetHeight();
 		}
+
+		Texture& GetTexture(int texNo)
+		{
+			return m_textures[texNo];
+		}
+
+
 	private:
 		/// <summary>
 		/// テクスチャを初期化。

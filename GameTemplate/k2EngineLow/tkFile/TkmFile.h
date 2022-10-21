@@ -82,7 +82,7 @@ namespace nsK2EngineLow {
 		struct VectorBuffer {
 			Vector3 buffer[3];		//三角形の座標。
 			Vector3 normal;			//法線。
-
+			Vector2 uv[3];
 		};
 
 
@@ -91,13 +91,24 @@ namespace nsK2EngineLow {
 			return m_buffer;
 		}
 
-		std::vector<VectorBuffer> m_buffer;		// 頂点バッファ。
 
+
+		std::vector<VectorBuffer> m_buffer;		// 頂点バッファ。
+		std::string m_albedoMap;				//アルベドマップのファイル名
+		std::string m_albedoMapDDS;				//アルベドマップのファイル名
+		const char* m_albedo;
 
 		const std::vector< SMesh>& GetVertexBuffer() const
 		{
 			return m_meshParts;
 		}
+
+		
+		/*const nsK2EngineLow::LowTexture GetAlbeboMap()
+		{
+			return	m_meshParts[0].materials[0].albedoMap;
+		}*/
+
 		template <class IndexBuffer>
 		void Buffer(TkmFile::SMesh& mesh, const IndexBuffer& indexBuffer, BSP& bsp);
 		//NormalSmoothing normalSmoothing;

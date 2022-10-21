@@ -50,31 +50,39 @@ namespace nsK2EngineLow {
         }
     }
 
-    void ModelRender::Draw()
+    void ModelRender::Draw(bool offscreen)
     {
-        if (m_isShadowCaster)
-        {
-            // シャドウキャスター
-            for (int ligNo = 0;
-                ligNo < MAX_DIRECTIONAL_LIGHT;
-                ligNo++)
+        if (offscreen == true) {
+            m_renderingEngine->Add3DModelToOffScreen(m_offScreenModel);
+        }
+        else {
+
+            if (m_isShadowCaster)
             {
-                m_renderingEngine->Add3DModelToRenderToShadowMap(
-                    ligNo,
-                    m_shadowModels[ligNo][0],
-                    m_shadowModels[ligNo][1],
-                    m_shadowModels[ligNo][2]
-                );
+                // シャドウキャスター
+                for (int ligNo = 0;
+                    ligNo < MAX_DIRECTIONAL_LIGHT;
+                    ligNo++)
+                {
+                    m_renderingEngine->Add3DModelToRenderToShadowMap(
+                        ligNo,
+                        m_shadowModels[ligNo][0],
+                        m_shadowModels[ligNo][1],
+                        m_shadowModels[ligNo][2]
+                    );
+                }
             }
-        }
-        m_renderingEngine->Add3DModelToZPrepass(m_zprepassModel);
-        if (m_renderToGBufferModel.IsInited())
-        {
-            m_renderingEngine->Add3DModelToRenderGBufferPass(m_renderToGBufferModel);
-        }
-        if (m_forwardRenderModel.IsInited())
-        {
-            m_renderingEngine->Add3DModelToForwardRenderPass(m_forwardRenderModel);
+
+            m_renderingEngine->Add3DModelToZPrepass(m_zprepassModel);
+
+            if (m_renderToGBufferModel.IsInited())
+            {
+                m_renderingEngine->Add3DModelToRenderGBufferPass(m_renderToGBufferModel);
+            }
+            if (m_forwardRenderModel.IsInited())
+            {
+                m_renderingEngine->Add3DModelToForwardRenderPass(m_forwardRenderModel);
+            }
         }
     }
 }

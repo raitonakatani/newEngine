@@ -43,6 +43,9 @@ namespace nsK2EngineLow {
 		{
 			return *m_albedoMap;
 		}
+
+
+
 		/// <summary>
 		/// 法線マップを取得。
 		/// </summary>
@@ -120,6 +123,9 @@ namespace nsK2EngineLow {
 			int hasNormalMap;	//法線マップを保持しているかどうかのフラグ。
 			int hasSpecMap;		//スペキュラマップを保持しているかどうかのフラグ。
 		};
+
+		Texture* m_texture;						//アルベドマップ。
+
 		Texture* m_albedoMap;						//アルベドマップ。
 		Texture* m_normalMap;						//法線マップ。
 		Texture* m_specularMap;						//スペキュラマップ。

@@ -5,6 +5,7 @@ namespace nsK2EngineLow
 {
     void RenderingEngine::Init()
     {
+        InitOffScreenRenderTarget();
         InitZPrepassRenderTarget();
         InitMainRenderTarget();
         InitGBuffer();
@@ -22,6 +23,18 @@ namespace nsK2EngineLow
         {
             shadowMapRender.Init();
         }
+    }
+
+    void RenderingEngine::InitOffScreenRenderTarget()
+    {
+        m_offScreenRenderTarget.Create(
+            512,
+            512, 
+            1,
+            1,
+            DXGI_FORMAT_R32G32_FLOAT,
+            DXGI_FORMAT_D32_FLOAT
+        );
     }
 
     void RenderingEngine::InitZPrepassRenderTarget()
@@ -210,6 +223,9 @@ namespace nsK2EngineLow
 
     void RenderingEngine::Execute(RenderContext& rc)
     {
+        //オフスクリーンレンダリングへの描画
+     //   OFFScreenRendering(rc);
+
         // シャドウマップへの描画
         RenderToShadowMap(rc);
 
@@ -235,6 +251,7 @@ namespace nsK2EngineLow
         CopyMainRenderTargetToFrameBuffer(rc);
 
         // 登録されている3Dモデルをクリア
+        m_offScreenModels.clear();
         m_renderToGBufferModels.clear();
         m_forwardRenderModels.clear();
         m_zprepassModels.clear();
@@ -251,6 +268,25 @@ namespace nsK2EngineLow
             );
             ligNo++;
         }
+    }
+
+    void RenderingEngine::OFFScreenRendering(RenderContext& rc)
+    {
+        // まず、レンダリングターゲットとして設定できるようになるまで待つ
+        rc.WaitUntilToPossibleSetRenderTarget(m_offScreenRenderTarget);
+        
+        // レンダリングターゲットを設定
+        rc.SetRenderTargetAndViewport(m_offScreenRenderTarget);
+
+        // レンダリングターゲットをクリア
+        rc.ClearRenderTargetView(m_offScreenRenderTarget);
+
+        for (auto& model : m_offScreenModels)
+        {
+            model->Draw(rc);
+        }
+
+        rc.WaitUntilFinishDrawingToRenderTarget(m_offScreenRenderTarget);
     }
 
     void RenderingEngine::ZPrepass(RenderContext& rc)

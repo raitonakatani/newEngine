@@ -75,6 +75,12 @@ namespace nsK2EngineLow {
 		{
 			return m_textureDesc.Format;
 		}
+
+		void SetTexture(const wchar_t* filePath)
+		{
+			InitFromDDSFile(filePath);
+		}
+
 	private:
 		/// <summary>
 		/// DDSファイルからテクスチャをロード。
