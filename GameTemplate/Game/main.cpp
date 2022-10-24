@@ -24,6 +24,8 @@ struct DirectionalLight
 
 struct inkpos
 {
+    Vector3 worldPOS;
+    float pad;
     Vector2 uv;
 };
 
@@ -52,8 +54,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
     RenderTarget offscreenRenderTarget;
     offscreenRenderTarget.Create(
-        1280,
-        720,
+        1024,
+        1024,
         1,
         1,
         DXGI_FORMAT_R8G8B8A8_UNORM,
@@ -117,6 +119,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 
     inkpos ink;
+    ink.worldPOS = {0.0f,250.0f,-75.0f};
     ink.uv.x = 0.5f;
     ink.uv.y = 0.5f;
 
@@ -136,8 +139,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     //これをモデルのテクスチャに塗りたい
     SpriteInitData inkspriteinitdata;
     //DDSファイル(画像データ)のファイルパスを指定する。
-    inkspriteinitdata.m_ddsFilePath[0] = "Assets/sprite/blue.DDS";
-    //spriteinitdata.m_textures[0] = &TexturerenderTarget.GetRenderTargetTexture();
+    inkspriteinitdata.m_ddsFilePath[0] = "Assets/sprite/inku3.DDS";
+    //inkspriteinitdata.m_ddsFilePath[0] = "Assets/modelData/testModel/boxtexture.DDS";
     //Sprite表示用のシェーダーのファイルパスを指定する。
     inkspriteinitdata.m_fxFilePath = "Assets/shader/sprite.fx";
     //スプライトの幅と高さを指定する。
@@ -151,23 +154,47 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     
     //モデルのテクスチャ
     //これにインクを塗ってテクスチャ切り替えをしたい
-    
-    // ↓今これがしたい
-    // m_expandShaderResoruceViewでインクのテクスチャをシェーダーに持っていきたいのにレジスタt10に入っていない
     SpriteInitData spriteinitdata;
     //DDSファイル(画像データ)のファイルパスを指定する。
     spriteinitdata.m_ddsFilePath[0] = "Assets/modelData/testModel/boxtexture.DDS";
+ //   spriteinitdata.m_ddsFilePath[0] = "Assets/modelData/testModel/boxtexture.DDS";
     //Sprite表示用のシェーダーのファイルパスを指定する。
     spriteinitdata.m_fxFilePath = "Assets/shader/Splatoon/inksprite.fx";
     //スプライトの幅と高さを指定する。
-    spriteinitdata.m_width = 256;
-    spriteinitdata.m_height = 256;
+    spriteinitdata.m_width = 1024;
+    spriteinitdata.m_height = 1024;
   //  spriteinitdata.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
     spriteinitdata.m_expandShaderResoruceView[0] = &inksprite.GetTexture(0);
-
+    
     //Sprite初期化オブジェクトを使用して、Spriteを初期化する。
     Sprite sprite;
     sprite.Init(spriteinitdata);
+
+
+
+
+
+    Vector4 worldPos = Vector4(ink.worldPOS.x, ink.worldPOS.y, ink.worldPOS.z, 1.0f);
+
+    Matrix matrix;
+    matrix.Multiply(g_camera3D->GetViewMatrix(), g_camera3D->GetProjectionMatrix());
+
+    matrix.Apply(worldPos);
+
+    //カメラのビュー行列を掛ける。
+    //カメラ座標に変換。
+    worldPos.x = (worldPos.x / worldPos.w);
+    worldPos.y = (worldPos.y / worldPos.w);
+
+    //カメラのプロジェクション行列を掛ける。
+    //スクリーン座標に変換。
+    worldPos.x *= FRAME_BUFFER_W / 2;
+    worldPos.y *= FRAME_BUFFER_H / 2;
+
+    ink.uv.x = worldPos.x;
+    ink.uv.y = worldPos.y;
+
+
 
 
     //////////////////////////////////////
@@ -191,7 +218,29 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
   //
   //     renderingEngine.OFFScreenRendering(renderContext);
 
+        boxModel.ChangeAlbedoMap(
+            "",
+            offscreenRenderTarget.GetRenderTargetTexture()
+        );
+        //offscreenRenderTarget.GetRenderTargetTexture()
 
+        // step-4 レンダリングターゲットをoffscreenRenderTargetに変更する
+        RenderTarget* rtArray[] = { &offscreenRenderTarget };
+        renderContext.WaitUntilToPossibleSetRenderTargets(1, rtArray);
+        renderContext.SetRenderTargets(1, rtArray);
+        renderContext.ClearRenderTargetViews(1, rtArray);
+
+        // step-5 offscreenRenderTargetに背景、プレイヤーを描画する
+        //bgModel.Draw(renderContext);
+        //plModel.Draw(renderContext);
+        sprite.Draw(renderContext);
+
+        renderContext.WaitUntilFinishDrawingToRenderTargets(1, rtArray);
+        // step-6 画面に表示されるレンダリングターゲットに戻す
+        renderContext.SetRenderTarget(
+            g_graphicsEngine->GetCurrentFrameBuffuerRTV(),
+            g_graphicsEngine->GetCurrentFrameBuffuerDSV()
+        );
 
         //////////////////////////////////////
         // ここから絵を描くコードを記述する
@@ -216,8 +265,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 
 
-        sprite.Draw(renderContext);
-
+  //      sprite.Draw(renderContext);
+        inksprite.GetTexture(0);
 
         Vector3 POS;
         Vector2 UV;
@@ -237,39 +286,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
                 //inksprite.Draw(renderContext);
 
                 //平面と線分の交点を求める。　POS（交点の座標）、vector3d(線分始点)、vector3dend(線分終点)、ポリゴンの3頂点
-                if (boxModel.IntersectPlaneAndLine(POS, UV, startVector, endVector, bufferList) == true) {
+                if (boxModel.IntersectPlaneAndLine(ink.worldPOS, ink.uv, startVector, endVector, bufferList) == true) {
 
                     auto Vector = POS;
-                    //ink.uv = UV;
-                    auto Vector2 = POS;
-
-                    inkspriteinitdata.m_ddsFilePath[0] = "Assets/sprite/blue.DDS";
-                   // inkspriteinitdata.m_fxFilePath = "Assets/shader/sprite.fx";
-                    inksprite.Init(inkspriteinitdata);
-
-
-                    boxModel.ChangeAlbedoMap(
-                        "",
-                        inksprite.GetTexture(0)
-                    );
-
-                    // step-4 レンダリングターゲットをoffscreenRenderTargetに変更する
-                    RenderTarget* rtArray[] = { &offscreenRenderTarget };
-                    renderContext.WaitUntilToPossibleSetRenderTargets(1, rtArray);
-                    renderContext.SetRenderTargets(1, rtArray);
-                    renderContext.ClearRenderTargetViews(1, rtArray);
-
-                    // step-5 offscreenRenderTargetに背景、プレイヤーを描画する
-                    //bgModel.Draw(renderContext);
-                    //plModel.Draw(renderContext);
-                    inksprite.Draw(renderContext);
-
-                    renderContext.WaitUntilFinishDrawingToRenderTargets(1, rtArray);
-                    // step-6 画面に表示されるレンダリングターゲットに戻す
-                    renderContext.SetRenderTarget(
-                        g_graphicsEngine->GetCurrentFrameBuffuerRTV(),
-                        g_graphicsEngine->GetCurrentFrameBuffuerDSV()
-                    );
 
                 }
 
@@ -337,6 +356,7 @@ void MoveCamera()
     target.x -= g_pad[0]->GetLStickXF() * 2.0f;
     pos.y += g_pad[0]->GetRStickYF() * 2.0f;
     target.y += g_pad[0]->GetRStickYF() * 2.0f;
+
     g_camera3D->SetPosition(pos);
     g_camera3D->SetTarget(target);
 }

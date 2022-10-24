@@ -6,10 +6,6 @@ cbuffer cb : register(b0)
 {
     float4x4 mvp; //���[���h�r���[�v���W�F�N�V�����s��B
     float4 mulColor; //��Z�J���[�B
-    float4 screenParam;
-    float2 imageParam;
-    int isRight = 0;
-    int isUp = 0;
 };
 struct VSInput
 {
@@ -35,39 +31,6 @@ PSInput VSMain(VSInput In)
 }
 float4 PSMain(PSInput In) : SV_Target0
 {
- ////�E����\�������Ȃ��B
- //   if (isRight == 1)
- //   {
- //       if (In.pos.x > imageParam.x)
- //       {
- //           clip(-1);
- //       }
- //   }
- //   //������\�������Ȃ��B
- //   else if (isRight == 0)
- //   {
- //       if (In.pos.x < imageParam.x)
- //       {
- //           clip(-1);
- //       }
- //   }
-    
- //   //�㑤��\�������Ȃ��B
- //   if (isUp == 1)
- //   {
- //       if (In.pos.y < imageParam.y)
- //       {
- //           clip(-1);
- //       }
- //   }
- //   //������\�������Ȃ��B
- //   else if (isUp == 0)
- //   {
- //       if (In.pos.y > imageParam.y)
- //       {
- //           clip(-1);
- //       }
- //   }
     
     float4 color = colorTexture.Sample(Sampler, In.uv) * mulColor;
     return color;
