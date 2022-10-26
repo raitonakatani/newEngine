@@ -22,14 +22,6 @@ struct DirectionalLight
 	float specPow;      // スペキュラの絞り
 };
 
-struct inkpos
-{
-    Vector3 worldPOS;
-    float pad;
-    Vector2 uv;
-};
-
-
 
 
 // K2EngineLowのグローバルアクセスポイント。
@@ -54,8 +46,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
     RenderTarget offscreenRenderTarget;
     offscreenRenderTarget.Create(
-        1024,
-        1024,
+        FRAME_BUFFER_W,
+        FRAME_BUFFER_H,
         1,
         1,
         DXGI_FORMAT_R8G8B8A8_UNORM,
@@ -101,7 +93,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     boxModelInitData.m_fxFilePath = "Assets/shader/sample3D.fx";
     Model boxModel;
     boxModel.Init(boxModelInitData);
-    boxModel.UpdateWorldMatrix({ 0.0f,250.0f,0.0f }, g_quatIdentity, g_vec3One);
+    boxModel.UpdateWorldMatrix({ 0.0f,150.0f,0.0f }, g_quatIdentity, g_vec3One);
 
     //背景
     ModelInitData bgModelInitData;
@@ -117,35 +109,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     Model plModel;
     plModel.Init(plModelInitdata);
 
-
-    inkpos ink;
-    ink.worldPOS = {0.0f,250.0f,-75.0f};
-    ink.uv.x = 0.5f;
-    ink.uv.y = 0.5f;
-
-
-    //やりたいことリスト（やらなければならない）
-    //その１　当たった場所を求める　　　　　　　						できた		modelRender.hで行っている
-    //　　　　衝突したポリゴンの３頂点のUV座標を持ってくる				できた
-    //その２　当たったかどうかの判定									できた		modelRender.hで行っている
-    //その３　インクをテクスチャにオフスクリーンレンダリング			出来てない　　DrawTextureクラスで行う
-    //　　　　メイン部分　　　その時にテクスチャ差し替え				できた
-    //　　　　メイン部分　衝突点のUV座標を求める　　　　　　　　　		できた
-    //その４　できたやつをオンスクリーンレンダリング					←今ここ
-    //        メイン部分　　　差し替えたテクスチャを元に戻す			まだやってない
-    
     
     //インクのテクスチャ
     //これをモデルのテクスチャに塗りたい
     SpriteInitData inkspriteinitdata;
     //DDSファイル(画像データ)のファイルパスを指定する。
     inkspriteinitdata.m_ddsFilePath[0] = "Assets/sprite/inku3.DDS";
-    //inkspriteinitdata.m_ddsFilePath[0] = "Assets/modelData/testModel/boxtexture.DDS";
     //Sprite表示用のシェーダーのファイルパスを指定する。
     inkspriteinitdata.m_fxFilePath = "Assets/shader/sprite.fx";
     //スプライトの幅と高さを指定する。
-    inkspriteinitdata.m_width = 256;
-    inkspriteinitdata.m_height = 256;
+    inkspriteinitdata.m_width = FRAME_BUFFER_W;
+    inkspriteinitdata.m_height = FRAME_BUFFER_W;
     //Sprite初期化オブジェクトを使用して、Spriteを初期化する。
     Sprite inksprite;
     inksprite.Init(inkspriteinitdata);
@@ -156,45 +130,25 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     //これにインクを塗ってテクスチャ切り替えをしたい
     SpriteInitData spriteinitdata;
     //DDSファイル(画像データ)のファイルパスを指定する。
-    spriteinitdata.m_ddsFilePath[0] = "Assets/modelData/testModel/boxtexture.DDS";
- //   spriteinitdata.m_ddsFilePath[0] = "Assets/modelData/testModel/boxtexture.DDS";
+    spriteinitdata.m_ddsFilePath[0] = boxModel.GetTkmFile()->m_albedo;
     //Sprite表示用のシェーダーのファイルパスを指定する。
     spriteinitdata.m_fxFilePath = "Assets/shader/Splatoon/inksprite.fx";
     //スプライトの幅と高さを指定する。
-    spriteinitdata.m_width = 1024;
-    spriteinitdata.m_height = 1024;
-  //  spriteinitdata.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    spriteinitdata.m_width = FRAME_BUFFER_W;
+    spriteinitdata.m_height = FRAME_BUFFER_H;
     spriteinitdata.m_expandShaderResoruceView[0] = &inksprite.GetTexture(0);
-    
     //Sprite初期化オブジェクトを使用して、Spriteを初期化する。
     Sprite sprite;
-    sprite.Init(spriteinitdata);
+//    sprite.Init(spriteinitdata);
 
 
+    Vector3 startVector = Vector3::Zero;
+    Vector3 endVector = Vector3::Zero;
+    //0.223011225
+    //0.313250005
 
-
-
-    Vector4 worldPos = Vector4(ink.worldPOS.x, ink.worldPOS.y, ink.worldPOS.z, 1.0f);
-
-    Matrix matrix;
-    matrix.Multiply(g_camera3D->GetViewMatrix(), g_camera3D->GetProjectionMatrix());
-
-    matrix.Apply(worldPos);
-
-    //カメラのビュー行列を掛ける。
-    //カメラ座標に変換。
-    worldPos.x = (worldPos.x / worldPos.w);
-    worldPos.y = (worldPos.y / worldPos.w);
-
-    //カメラのプロジェクション行列を掛ける。
-    //スクリーン座標に変換。
-    worldPos.x *= FRAME_BUFFER_W / 2;
-    worldPos.y *= FRAME_BUFFER_H / 2;
-
-    ink.uv.x = worldPos.x;
-    ink.uv.y = worldPos.y;
-
-
+    Vector3 position;
+    position = { 0.0f,200.0f,200.0f };
 
 
     //////////////////////////////////////
@@ -218,77 +172,64 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
   //
   //     renderingEngine.OFFScreenRendering(renderContext);
 
-        boxModel.ChangeAlbedoMap(
-            "",
-            offscreenRenderTarget.GetRenderTargetTexture()
-        );
-        //offscreenRenderTarget.GetRenderTargetTexture()
-
-        // step-4 レンダリングターゲットをoffscreenRenderTargetに変更する
-        RenderTarget* rtArray[] = { &offscreenRenderTarget };
-        renderContext.WaitUntilToPossibleSetRenderTargets(1, rtArray);
-        renderContext.SetRenderTargets(1, rtArray);
-        renderContext.ClearRenderTargetViews(1, rtArray);
-
-        // step-5 offscreenRenderTargetに背景、プレイヤーを描画する
-        //bgModel.Draw(renderContext);
-        //plModel.Draw(renderContext);
-        sprite.Draw(renderContext);
-
-        renderContext.WaitUntilFinishDrawingToRenderTargets(1, rtArray);
-        // step-6 画面に表示されるレンダリングターゲットに戻す
-        renderContext.SetRenderTarget(
-            g_graphicsEngine->GetCurrentFrameBuffuerRTV(),
-            g_graphicsEngine->GetCurrentFrameBuffuerDSV()
-        );
-
         //////////////////////////////////////
         // ここから絵を描くコードを記述する
         //////////////////////////////////////
 
- //       bgModelRender.Draw();
- //
- //       boxModelRender.Draw();
- //
- //       // step-2 Unityちゃんを描画する
- //       UnityModelRender.Draw();
- //
- //
  //       //レンダリングエンジンを実行
  //       renderingEngine.Execute(renderContext);
  
-
         // step-7 画面に表示されるレンダリングターゲットに各種モデルを描画する
         bgModel.Draw(renderContext);
-        plModel.Draw(renderContext);
+    //    plModel.UpdateWorldMatrix(position, g_quatIdentity, g_vec3One);
+    //    plModel.Draw(renderContext);
         boxModel.Draw(renderContext);
-
-
-
-  //      sprite.Draw(renderContext);
-        inksprite.GetTexture(0);
 
         Vector3 POS;
         Vector2 UV;
 
         //三角形の座標が入っているリストを持ってくる。
         std::vector<nsK2EngineLow::TkmFile::VectorBuffer> bufferList = boxModel.GetTkmFile()->GetBuffer();
-
-   
-        Vector3 startVector=Vector3::Zero;
-        Vector3 endVector= Vector3::Zero;
              
                 if (g_pad[0]->IsTrigger(enButtonA))
                 {
-                    startVector = { 0.0f,250.0f,-200.0f };
-                    endVector = { 0.0f,450.0f,200.0f };
+                    startVector = { 0.0f,00.0f,300.0f };
+                    endVector = { 0.0f,200.0f,-300.0f };
+                    position = endVector;
                 }
-                //inksprite.Draw(renderContext);
 
                 //平面と線分の交点を求める。　POS（交点の座標）、vector3d(線分始点)、vector3dend(線分終点)、ポリゴンの3頂点
-                if (boxModel.IntersectPlaneAndLine(ink.worldPOS, ink.uv, startVector, endVector, bufferList) == true) {
+                if (boxModel.IntersectPlaneAndLine(POS, UV, startVector, endVector, bufferList) == true) {
 
                     auto Vector = POS;
+                    Vector2 UVPOS = UV;
+                    
+                    boxModel.ChangeAlbedoMap(
+                        "",
+                        offscreenRenderTarget.GetRenderTargetTexture()
+                    );
+
+                    // step-4 レンダリングターゲットをoffscreenRenderTargetに変更する
+                    RenderTarget* rtArray[] = { &offscreenRenderTarget };
+                    renderContext.WaitUntilToPossibleSetRenderTargets(1, rtArray);
+                    renderContext.SetRenderTargets(1, rtArray);
+                    renderContext.ClearRenderTargetViews(1, rtArray);
+
+                    // 求めたUV座標をシェーダーに持っていく。
+                    if (g_pad[0]->IsPress(enButtonA)) {
+                        spriteinitdata.m_posi.x = UVPOS.x;
+                        spriteinitdata.m_posi.y = UVPOS.y;
+                        sprite.Init(spriteinitdata);
+                    };
+                    //テクスチャをドロー
+                    sprite.Draw(renderContext);
+
+                    renderContext.WaitUntilFinishDrawingToRenderTargets(1, rtArray);
+                    // step-6 画面に表示されるレンダリングターゲットに戻す
+                    renderContext.SetRenderTarget(
+                        g_graphicsEngine->GetCurrentFrameBuffuerRTV(),
+                        g_graphicsEngine->GetCurrentFrameBuffuerDSV()
+                    );
 
                 }
 

@@ -1,22 +1,13 @@
 
-struct inkpos
-{
-    float3 worldPOS;
-    float2 uv : uv;
-};
-
 cbuffer cb : register(b0)
 {
-    float4x4 mvp; 
+    float4x4 mvp;
     float4 mulColor;
-    float4x4 mView;
-    float4x4 mProj;
+    float4 screenParam;
+    float2 uvposi;//求めたUV座標
 };
 
-cbuffer inkposition : register(b1)
-{
-    inkpos ink;
-}
+
 
 struct SVSIn
 {
@@ -28,7 +19,6 @@ struct SPSIn
 {
     float4 pos : SV_POSITION;
     float2 uv : TEXCOORD0;
-    float2 inkpos : TEXCOORD02;
 };
 
 ///////////////////////////////////////////////////
@@ -49,15 +39,7 @@ SPSIn VSMain(SVSIn vsIn)
     psIn.pos = mul(mvp, vsIn.pos);
     psIn.uv = vsIn.uv;
     
-    psIn.inkpos = ink.uv;
-    
-    //ワールド行列に変換
-    //psIn.inkpos = float4(ink.worldPOS, 1.0f);
-    //psIn.inkpos = mul(mvp, vsIn.pos);
-    //psIn.inkpos = mul(mView, psIn.pos);
-    //psIn.inkpos = mul(mProj, psIn.pos);
 
-    
     return psIn;
 }
 
@@ -66,25 +48,18 @@ SPSIn VSMain(SVSIn vsIn)
 /// </summary>
 float4 PSMain(SPSIn psIn) : SV_Target0
 {
-    float2 inkUV = psIn.uv;
-    inkUV.x -= 0.1f;
-    inkUV.y += 0.1f;
+    //求めたUV座標
+    float2 inkUV = uvposi;
+   //float2 inkUV = psIn.uv;
+
+    //インクのテクスチャ
+    float3 inkTextre = g_ink.Sample(g_sampler, inkUV);
     
-    if (inkUV.x ==0.5f
-        || inkUV.y ==0.5f)
-    {
-   //     psIn.inkpos += psIn.uv;
-    }
-    
-//    inkUV /= 2;
-   // inkUV.x =0.5f;
-   // inkUV.y =0.5f;
-//    float3 inkTextre = 0.0f;
-    float3 inkTextre = g_ink.Sample(g_sampler, psIn.inkpos);
- //   float4 inkTextre = g_ink.Sample(g_sampler, ink.uv) * mulColor;
-    
+    //モデルのテクスチャ
     float4 color = g_albedo.Sample(g_sampler, psIn.uv) * mulColor;
 
-  //  color.xyz *= inkTextre;
+    //インクを塗る
+    color.xyz *= inkTextre;
+
     return color;
 }

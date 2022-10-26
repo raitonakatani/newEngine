@@ -42,6 +42,7 @@ namespace nsK2EngineLow {
 			DXGI_FORMAT_UNKNOWN,
 		};	//レンダリングするカラーバッファのフォーマット。
 		D3D12_TEXTURE_ADDRESS_MODE textureAddressMode = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;	// テクスチャアドレッシングモード。
+		Vector2 m_posi;
 	};
 	/// <summary>
 	/// スプライトクラス。
@@ -168,6 +169,7 @@ namespace nsK2EngineLow {
 			Matrix mvp;
 			Vector4 mulColor;
 			Vector4 screenParam;
+			Vector2 uvposi;
 		};
 		LocalConstantBuffer m_constantBufferCPU;	//CPU側の定数バッファ。
 		ConstantBuffer		m_constantBufferGPU;	//GPU側の定数バッファ。

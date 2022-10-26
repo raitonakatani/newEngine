@@ -194,6 +194,8 @@ namespace nsK2EngineLow {
         m_size.x = static_cast<float>(initData.m_width);
         m_size.y = static_cast<float>(initData.m_height);
 
+        m_constantBufferCPU.uvposi = initData.m_posi;
+
         //テクスチャを初期化。
         InitTextures(initData);
         //頂点バッファとインデックスバッファを初期化。
@@ -256,6 +258,10 @@ namespace nsK2EngineLow {
         m_constantBufferCPU.screenParam.y = g_camera3D->GetFar();
         m_constantBufferCPU.screenParam.z = FRAME_BUFFER_W;
         m_constantBufferCPU.screenParam.w = FRAME_BUFFER_H;
+
+      //  m_constantBufferCPU.uvposi.x = 0.223f;
+
+
 
         //定数バッファを更新。
         //renderContext.UpdateConstantBuffer(m_constantBufferGPU, &m_constantBufferCPU);

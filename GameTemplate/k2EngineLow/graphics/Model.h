@@ -13,6 +13,13 @@ namespace nsK2EngineLow {
 		enModelUpAxisZ,		//モデルの上方向がZ軸。
 	};
 
+	struct inkpos {
+		Vector3 out;			//戻り値　交点が見つかれば格納される 衝突点
+		Vector2 uv;				//戻り値　交点が見つかれば格納される 衝突したポリゴンの３頂点のUV座標
+
+	};
+
+
 	/// <summary>
 	/// モデルの初期化データ
 	/// </summary>
@@ -241,7 +248,7 @@ namespace nsK2EngineLow {
 			for (int i = 0;i < vectorBuffer.size();i++)
 			{
 
-
+				inkpos ink;
 				Matrix matrix;
 
 				//ワールド行列を取得
@@ -299,7 +306,7 @@ namespace nsK2EngineLow {
 				out.x = A.x + (AB.x * hiritu);
 				out.y = A.y + (AB.y * hiritu);
 				out.z = A.z + (AB.z * hiritu);
-
+				ink.out = out;
 
 				if (hittest_polygon_3d(vectorBuffer[i].buffer[0], vectorBuffer[i].buffer[1], vectorBuffer[i].buffer[2], out) == false)
 				{
